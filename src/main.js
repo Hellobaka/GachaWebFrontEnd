@@ -16,9 +16,7 @@ import '@/icons' // icon
 import '@/permission' // permission control
 import vuetify from './plugins/vuetify'
 import snackbar from './utils/snackbar'
-import captcha from 'vue-social-captcha'
 
-Vue.use(captcha)
 Vue.prototype.snackbar = snackbar
 /**
  * If you don't want to use mock-server

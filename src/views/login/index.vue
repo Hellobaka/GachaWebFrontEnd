@@ -118,6 +118,105 @@
               </v-card-text>
             </v-card>
           </v-dialog>
+          <v-dialog v-model="forgetVisible" max-width="600px">
+            <v-stepper
+              v-model="forgetStep"
+              vertical
+            >
+              <v-stepper-step
+                :complete="forgetStep > 1"
+                step="1"
+              >
+                需要找回密码的邮箱
+                <small>QQ相关功能开发中</small>
+              </v-stepper-step>
+
+              <v-stepper-content step="1">
+                <v-text-field
+                  v-model="forgetForm.email"
+                  label="邮箱"
+                  clearable
+                  type="email"
+                  :rules="[rules.username]"
+                  :validate-on-blur="true"
+                />
+                <v-btn
+                  color="primary"
+                  @click="forget_verifyEmail"
+                >
+                  验证
+                </v-btn>
+              </v-stepper-content>
+
+              <v-stepper-step
+                :complete="forgetStep > 2"
+                step="2"
+              >
+                填写邮箱验证码
+              </v-stepper-step>
+
+              <v-stepper-content step="2">
+                <v-row style="margin-top: 10px;margin-left: 5px;margin-right: 5px;align-items:baseline">
+                  <v-text-field
+                    v-model="forgetForm.captchacode"
+                    label="验证码"
+                    clearable
+                  />
+                  <v-btn
+                    color="primary"
+                    style="margin:5px"
+                    :disabled="forgetForm.captchaText !== '获取验证码'"
+                    :loading="forgetForm.captchaLoading"
+                    @click="forget_getEmailCaptcha"
+                  >
+                    {{ forgetForm.captchaText }}
+                  </v-btn>
+                </v-row>
+                <v-btn
+                  color="primary"
+                  :loading="forgetForm.captchaVerifyLoading"
+                  @click="forget_VerifyEmailCaptcha"
+                >
+                  验证
+                </v-btn>
+              </v-stepper-content>
+
+              <v-stepper-step
+                :complete="forgetStep > 3"
+                step="3"
+              >
+                重置密码
+              </v-stepper-step>
+
+              <v-stepper-content step="3">
+                <v-text-field
+                  v-model="forgetForm.newpwd"
+                  label="新密码"
+                  prepend-icon="mdi-lock"
+                  :type="passwordDisplay ? 'text' : 'password'"
+                  :append-icon="passwordDisplay ? 'mdi-eye' : 'mdi-eye-off'"
+                  :rules="[rules.password]"
+                  @click:append="passwordDisplay = !passwordDisplay"
+                />
+                <v-text-field
+                  v-model="forgetForm.confirmnewpwd"
+                  label="重复新密码"
+                  prepend-icon="mdi-lock"
+                  :type="passwordDisplay ? 'text' : 'password'"
+                  :append-icon="passwordDisplay ? 'mdi-eye' : 'mdi-eye-off'"
+                  :rules="[forget_confirmpwdVerify]"
+                  @click:append="passwordDisplay = !passwordDisplay"
+                />
+                <v-btn
+                  color="primary"
+                  :loading="forgetForm.finalLoading"
+                  @click="forgetHandler"
+                >
+                  提交
+                </v-btn>
+              </v-stepper-content>
+            </v-stepper>
+          </v-dialog>
         </v-layout>
       </v-container>
     </v-main>
@@ -125,20 +224,35 @@
 </template>
 
 <script>
-import { register, verifyQQ, verifyEmail, verifyCaptcha } from '@/api/user'
+import { register, verifyQQ, verifyEmail, verifyCaptcha, verifyEmailCaptcha, getEmailCaptcha, resetPwd } from '@/api/user'
 export default {
   name: 'Login',
   data() {
     return {
+      forgetStep: 1,
       passwordDisplay: false,
       loginLoading: false,
       regLoading: false,
       registerVisible: false,
+      forgetVisible: false,
       QQUsable: true,
       EmailUsable: true,
       loginForm: {
         username: '',
         password: ''
+      },
+      forgetForm: {
+        email: '',
+        newpassword: '',
+        captchacode: '',
+        second: 0,
+        captchaText: '获取验证码',
+        sessionID: '',
+        captchaLoading: false,
+        captchaVerifyLoading: false,
+        newpwd: '',
+        confirmnewpwd: '',
+        finalLoading: false
       },
       registerForm: {
         QQ: '',
@@ -197,7 +311,7 @@ export default {
         verifyQQ(this.registerForm.QQ).then((response) => {
           if (response.msg !== 'ok') {
             this.QQUsable = false
-            this.snackbar.Warning('此QQ已被使用')
+            this.snackbar.Warning('此QQ已被使用', 1500)
             return '此QQ已被使用'
           }
           this.QQUsable = true
@@ -214,7 +328,7 @@ export default {
         verifyEmail(this.registerForm.Email).then((response) => {
           if (response.msg !== 'ok') {
             this.EmailUsable = false
-            this.snackbar.Warning('此邮箱已被使用')
+            this.snackbar.Warning('此邮箱已被使用', 1500)
             return '此邮箱已被使用'
           }
           this.EmailUsable = true
@@ -247,10 +361,10 @@ export default {
         return
       }
       // eslint-disable-next-line no-undef
-      const captcha1 = new TencentCaptcha('2038093986', (res) => this.doReg(res))
+      const captcha1 = new TencentCaptcha('2038093986', (res) => this.captchaCallback(res, this.doReg))
       captcha1.show()
     },
-    doReg(res) {
+    captchaCallback(res, func) {
       // 返回结果
       // ret         Int       验证结果，0：验证成功。2：用户主动关闭验证码。
       // ticket      String    验证成功的票据，当且仅当 ret = 0 时 ticket 有值。
@@ -267,26 +381,82 @@ export default {
             this.snackbar.Error(response.data.CaptchaMsg)
             return
           }
-          this.regLoading = true
-          register(this.registerForm).then(() => {
-            this.snackbar.Success('注册成功')
-          }).catch((err) => {
-            this.snackbar.Error(err)
-          })
-          this.regLoading = false
+          func()
         })
       } else if (res.ret === 2) {
         this.snackbar.Warning('取消验证码操作')
       }
     },
+    doReg() {
+      this.regLoading = true
+      register(this.registerForm).then(() => {
+        this.snackbar.Success('注册成功')
+      }).catch((err) => {
+        this.snackbar.Error(err)
+      })
+      this.regLoading = false
+    },
+    forget_verifyEmail() {
+      // eslint-disable-next-line no-undef
+      const captcha1 = new TencentCaptcha('2038093986', (res) => this.captchaCallback(res, this.nextStep))
+      captcha1.show()
+    },
+    forget_getEmailCaptcha() {
+      if (this.forgetForm.second !== 0) {
+        return
+      }
+      this.forgetForm.captchaLoading = true
+      getEmailCaptcha(this.forgetForm.email).then(response => {
+        if (response.msg === 'ok') {
+          this.forgetForm.second = 60
+          this.forgetForm.sessionID = response.data
+          this.forgetForm.captchaText = this.forgetForm.second + '秒后重新获取'
+          setInterval(() => {
+            if (this.forgetForm.second === 0) {
+              this.forgetForm.captchaText = '获取验证码'
+            } else {
+              this.forgetForm.second--
+              this.forgetForm.captchaText = this.forgetForm.second + '秒后重新获取'
+            }
+          }, 1000)
+          this.forgetForm.captchaLoading = false
+        }
+      }).catch(() => { this.forgetForm.captchaLoading = false })
+    },
+    forget_confirmpwdVerify() {
+      if (this.forgetForm.newpwd !== this.forgetForm.confirmnewpwd) {
+        return '两次密码不一致'
+      }
+      return true
+    },
+    nextStep() {
+      if (this.forgetStep === 3) {
+        return
+      }
+      this.forgetStep++
+    },
+    forget_VerifyEmailCaptcha() {
+      this.forgetForm.captchaVerifyLoading = true
+      verifyEmailCaptcha(this.forgetForm.captchacode, this.forgetForm.sessionID).then((response) => {
+        this.forgetStep = 3
+        this.forgetForm.captchaVerifyLoading = false
+      }).catch(() => { this.forgetForm.captchaVerifyLoading = false })
+    },
     forgetHandler() {
-
+      this.forgetForm.finalLoading = true
+      resetPwd(this.forgetForm.sessionID, this.forgetForm.newpwd).then(() => {
+        this.snackbar.Success('密码重置成功')
+        this.forgetForm.finalLoading = false
+      }).catch(() => { this.forgetForm.finalLoading = false })
     },
     showRegisterDialog() {
       this.registerVisible = true
     },
     showForgetDialog() {
-      this.registerVisible = true
+      this.forgetForm.sessionID = ''
+      this.forgetStep = 1
+      this.forgetForm.captchacode = ''
+      this.forgetVisible = true
     }
   }
 }

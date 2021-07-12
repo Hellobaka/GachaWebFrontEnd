@@ -1,62 +1,41 @@
 <template>
-  <div v-if="isExternal" :style="styleExternalIcon" class="svg-external-icon svg-icon" v-on="$listeners" />
-  <svg v-else :class="svgClass" aria-hidden="true" v-on="$listeners">
-    <use :xlink:href="iconName" />
+  <svg
+    xmlns="http://www.w3.org/2000/svg"
+    viewBox="0 0 1024 1024"
+    :width="width"
+    :height="height"
+  >
+    <path :d="d" :fill="fill" />
   </svg>
 </template>
 
 <script>
-// doc: https://panjiachen.github.io/vue-element-admin-site/feature/component/svg-icon.html#usage
-import { isExternal } from '@/utils/validate'
-
+import svg from './svg'
 export default {
   name: 'SvgIcon',
   props: {
-    iconClass: {
+    width: {
+      type: String,
+      default: '24px'
+    },
+    height: {
+      type: String,
+      default: '24px'
+    },
+    name: {
       type: String,
       required: true
-    },
-    className: {
-      type: String,
-      default: ''
     }
   },
   computed: {
-    isExternal() {
-      return isExternal(this.iconClass)
+    d() {
+      return svg[this.name].d
     },
-    iconName() {
-      return `#icon-${this.iconClass}`
-    },
-    svgClass() {
-      if (this.className) {
-        return 'svg-icon ' + this.className
-      } else {
-        return 'svg-icon'
-      }
-    },
-    styleExternalIcon() {
-      return {
-        mask: `url(${this.iconClass}) no-repeat 50% 50%`,
-        '-webkit-mask': `url(${this.iconClass}) no-repeat 50% 50%`
-      }
+    fill() {
+      return svg[this.name].fill
     }
   }
 }
 </script>
 
-<style scoped>
-.svg-icon {
-  width: 1em;
-  height: 1em;
-  vertical-align: -0.15em;
-  fill: currentColor;
-  overflow: hidden;
-}
-
-.svg-external-icon {
-  background-color: currentColor;
-  mask-size: cover!important;
-  display: inline-block;
-}
-</style>
+<style scoped></style>

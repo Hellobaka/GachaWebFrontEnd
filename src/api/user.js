@@ -10,16 +10,17 @@ export function login(data) {
 
 export function getInfo(token) {
   return request({
-    url: '/api/v1/user/info',
+    url: '/api/v1/user/getuserinfo',
     method: 'get',
     params: { token }
   })
 }
 
-export function logout() {
+export function logout(data) {
   return request({
     url: '/api/v1/user/logout',
-    method: 'post'
+    method: 'post',
+    data
   })
 }
 
@@ -52,5 +53,29 @@ export function verifyCaptcha(randstr, ticket, ip) {
     url: '/api/v1/user/verifycaptcha',
     method: 'get',
     params: { randstr, ticket, ip }
+  })
+}
+
+export function getEmailCaptcha(address) {
+  return request({
+    url: '/api/v1/user/getemailcaptcha',
+    method: 'get',
+    params: { address }
+  })
+}
+
+export function verifyEmailCaptcha(code, sessionID) {
+  return request({
+    url: '/api/v1/user/verifyemailcaptcha',
+    method: 'get',
+    params: { code, sessionID }
+  })
+}
+
+export function resetPwd(sessionID, newpwd) {
+  return request({
+    url: '/api/v1/user/resetpwd',
+    method: 'get',
+    params: { sessionID, newpwd }
   })
 }
