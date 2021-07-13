@@ -56,6 +56,12 @@ router.beforeEach(async(to, from, next) => {
 
     if (whiteList.indexOf(to.path) !== -1) {
       // in the free login whitelist, go directly
+      const head = document.getElementsByTagName('head')
+      const meta = document.createElement('meta')
+      // <meta http-equiv="Content-Security-Policy" content="upgrade-insecure-requests">
+      meta.setAttribute('http-equiv', 'Content-Security-Policy')
+      meta.setAttribute('content', 'upgrade-insecure-requests')
+      head[0].appendChild(meta)
       next()
     } else {
       // other pages that do not have permission to access are redirected to the login page.
