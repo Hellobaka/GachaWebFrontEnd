@@ -53,7 +53,7 @@ const actions = {
         if (!response.data) {
           reject('Verification failed, please Login again.')
         }
-
+        console.log(response.data)
         const { developer, nickname, avatar } = response.data
         let roles = ''
         if (developer === 0) {

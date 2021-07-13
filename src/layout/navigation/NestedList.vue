@@ -59,7 +59,8 @@ export default {
      * @return {array}
      */
     routes() {
-      return this.propsRoutes.filter(item => !item.hideInMenu)
+      // console.log(this.propsRoutes)
+      return this.propsRoutes.filter(item => !item.hidden)
     }
   },
   methods: {
@@ -69,7 +70,7 @@ export default {
      * @returns {boolean}
      */
     isLevelOneRoute(route) {
-      return this.$store.getters['permission/routes'].includes(route)
+      return this.$store.getters.permission_routes.includes(route)
     },
     /**
      * 判断当前路径对象是否被渲染为 list-group

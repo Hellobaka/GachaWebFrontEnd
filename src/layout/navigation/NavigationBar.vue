@@ -5,7 +5,7 @@
     mobile-break-point="600"
     :expand-on-hover="$vuetify.breakpoint.smOnly"
   >
-    <nested-list :props-routes="$store.getters['permission/routes']" />
+    <nested-list :props-routes="$store.getters.permission_routes" />
   </v-navigation-drawer>
 </template>
 

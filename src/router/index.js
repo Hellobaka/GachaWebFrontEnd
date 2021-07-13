@@ -42,7 +42,6 @@ export const constantRoutes = [
     component: () => import('@/views/404'),
     hidden: true
   },
-
   {
     path: '/',
     component: Layout,
@@ -51,7 +50,18 @@ export const constantRoutes = [
       path: 'dashboard',
       name: 'Dashboard',
       component: () => import('@/views/dashboard/index'),
-      meta: { title: 'Dashboard', icon: 'dashboard' }
+      meta: { title: 'Dashboard', icon: 'view-dashboard' }
+    }]
+  },
+  {
+    path: '/download',
+    component: Layout,
+    redirect: '/download',
+    children: [{
+      path: 'download',
+      name: 'DownloadPage',
+      component: () => import('@/views/download/index'),
+      meta: { title: '下载', icon: 'view-dashboard' }
     }]
   }
 ]
