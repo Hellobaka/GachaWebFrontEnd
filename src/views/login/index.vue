@@ -142,6 +142,7 @@
                 />
                 <v-btn
                   color="primary"
+                  :loading="forgetForm.verifyEmailLoading"
                   @click="forget_verifyEmail"
                 >
                   验证
@@ -252,7 +253,8 @@ export default {
         captchaVerifyLoading: false,
         newpwd: '',
         confirmnewpwd: '',
-        finalLoading: false
+        finalLoading: false,
+        verifyEmailLoading: false
       },
       registerForm: {
         QQ: '',
@@ -397,6 +399,7 @@ export default {
       this.regLoading = false
     },
     forget_verifyEmail() {
+      this.forgetForm.verifyEmailLoading = true
       // eslint-disable-next-line no-undef
       const captcha1 = new TencentCaptcha('2038093986', (res) => this.captchaCallback(res, this.nextStep))
       captcha1.show()
@@ -434,6 +437,7 @@ export default {
         return
       }
       this.forgetStep++
+      this.forgetForm.verifyEmailLoading = false
     },
     forget_VerifyEmailCaptcha() {
       this.forgetForm.captchaVerifyLoading = true
