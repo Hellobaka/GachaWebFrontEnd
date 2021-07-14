@@ -53,7 +53,7 @@ export default {
       this.$store.dispatch('app/toggleSideBar')
     },
     logout() {
-      this.$store.dispatch('user/FONT_LOGOUT').then(() => {
+      this.$store.dispatch('user/logout', this.$store.getters.token).then(() => {
         // 刷新路由
         history.go('/login')
       })

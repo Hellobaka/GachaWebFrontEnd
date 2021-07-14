@@ -38,7 +38,7 @@ export default {
       //     role => route.meta.roles && route.meta.roles.includes(role)
       //   )
       // );
-      return this.$store.getters['user/userRole'].some(
+      return this.$store.getters.roles.some(
         role => route.meta.roles && route.meta.roles.includes(role)
       )
     }
