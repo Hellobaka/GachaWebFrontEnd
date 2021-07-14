@@ -1,6 +1,8 @@
 import request from '@/utils/request'
+import md5 from 'js-md5'
 
 export function login(data) {
+  data.password = md5(data.password + '你看这个平台就是屑啦')
   return request({
     url: '/api/v1/user/login',
     method: 'post',
@@ -25,6 +27,7 @@ export function logout(data) {
 }
 
 export function register(data) {
+  data.Password = md5(data.Password + '你看这个平台就是屑啦')
   return request({
     url: '/api/v1/user/register',
     method: 'post',
@@ -73,6 +76,7 @@ export function verifyEmailCaptcha(code, sessionID) {
 }
 
 export function resetPwd(sessionID, newpwd) {
+  newpwd = md5(newpwd + '你看这个平台就是屑啦')
   return request({
     url: '/api/v1/user/resetpwd',
     method: 'get',
