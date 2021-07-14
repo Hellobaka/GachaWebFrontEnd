@@ -50,18 +50,27 @@ export const constantRoutes = [
       path: 'dashboard',
       name: 'Dashboard',
       component: () => import('@/views/dashboard/index'),
-      meta: { title: 'Dashboard', icon: 'view-dashboard' }
+      meta: { title: 'Dashboard', icon: 'mdi-view-dashboard' }
     }]
   },
   {
     path: '/download',
     component: Layout,
-    redirect: '/download',
     children: [{
       path: 'download',
       name: 'DownloadPage',
       component: () => import('@/views/download/index'),
-      meta: { title: '下载', icon: 'view-dashboard' }
+      meta: { title: '下载', icon: 'mdi-view-dashboard' }
+    }]
+  },
+  {
+    path: '/github',
+    component: Layout,
+    children: [{
+      path: 'github',
+      name: 'Github',
+      component: () => import('@/views/github/index'),
+      meta: { title: 'GitHub页', icon: 'mdi-github' }
     }]
   }
 ]
