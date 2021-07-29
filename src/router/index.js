@@ -80,6 +80,16 @@ export const constantRoutes = [
  * the routes that need to be dynamically loaded based on user roles
  */
 export const asyncRoutes = [
+  {
+    path: '/poolPerview',
+    component: Layout,
+    children: [{
+      path: 'poolPerview',
+      name: 'PoolPerview',
+      component: () => import('@/views/poolpreview/index'),
+      meta: { title: '卡池预览', icon: 'mdi-github' }
+    }]
+  },
   // 404 page must be placed at the end !!!
   { path: '*', redirect: '/404', hidden: true }
 ]

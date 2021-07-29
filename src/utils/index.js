@@ -115,3 +115,40 @@ export function param2Obj(url) {
   })
   return obj
 }
+
+import pako from 'pako'
+export function GzipUnZip(b64Data) {
+  var strData = atob(b64Data, 'base64')
+  // Convert binary string to character-number array
+  var charData = strData.split('').map(function(x) { return x.charCodeAt(0) })
+  // Turn number array into byte-array
+  var binData = new Uint8Array(charData)
+  // unzip
+  var data = pako.inflate(binData)
+  // Convert g-unzipped byteArray back to ascii string:
+  // strData = String.fromCharCode.apply(null, new Uint16Array(data))
+  strData = Utf8ArrayToStr(data)
+  return unescape(strData)
+}
+
+function Utf8ArrayToStr(array) { // 数据流转化为字符串, 兼容汉字
+  var out = ''; var i = 0; var len = array.length; var char1; var char2; var char3; var char4
+  while (i < len) {
+    char1 = array[i++]
+    // 当单个字节时, 最大值 '01111111', 最小值 '00000000' 右移四位 07, 00
+    // 当两个字节时, 最大值 '11011111', 最小值 '11000000' 右移四位 13, 12
+    // 当三个字节时, 最大值 '11101111', 最小值 '11100000' 右移四位 14, 14
+    if (char1 >> 4 <= 7) {
+      out += String.fromCharCode(char1)
+    } else if (char1 >> 4 === 12 || char1 >> 4 === 13) {
+      char2 = array[i++]
+      out += String.fromCharCode(((char1 & 0x1F) << 6) | (char2 & 0x3F))
+    } else if (char1 >> 4 === 14) {
+      char2 = array[i++]
+      char3 = array[i++]
+      char4 = ((char1 & 0x0F) << 12) | ((char2 & 0x3F) << 6)
+      out += String.fromCharCode(char4 | ((char3 & 0x3F) << 0))
+    }
+  }
+  return out
+}
