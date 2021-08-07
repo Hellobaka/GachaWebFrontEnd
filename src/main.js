@@ -45,3 +45,10 @@ new Vue({
   vuetify,
   render: h => h(App)
 })
+// eslint-disable-next-line no-extend-native
+Array.prototype.remove = function(val) {
+  var index = this.indexOf(val)
+  if (index > -1) {
+    this.splice(index, 1)
+  }
+}

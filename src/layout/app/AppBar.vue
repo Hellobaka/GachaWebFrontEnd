@@ -8,18 +8,12 @@
     </v-toolbar-title>
     <v-spacer />
 
-    <screen-full />
-    <v-btn icon>
-      <svg-icon name="apps" />
-    </v-btn>
-    <v-btn icon>
-      <svg-icon name="bell" />
-    </v-btn>
     <v-menu
       transition="slide-y-transition"
       close-on-content-click
       offset-y
       bottom
+      nudge-left="36"
     >
       <template v-slot:activator="{ on }">
         <v-btn icon large color="primary" dark v-on="on">
@@ -28,12 +22,40 @@
           </v-avatar>
         </v-btn>
       </template>
-      <v-list dense>
+      <v-list>
+        <v-list-item>
+          <v-icon>mdi-account</v-icon>
+          <v-list-item-title>个人信息</v-list-item-title>
+        </v-list-item>
+        <v-divider />
         <v-list-item @click="logout">
-          <v-list-item-title>Logout</v-list-item-title>
+          <v-icon>mdi-logout</v-icon>
+          <v-list-item-title>退出登录</v-list-item-title>
         </v-list-item>
       </v-list>
     </v-menu>
+    <screen-full />
+    <v-menu
+      transition="slide-y-transition"
+      close-on-content-click
+      offset-y
+      bottom
+      nudge-left="36"
+    >
+      <template v-slot:activator="{ on }">
+        <v-btn icon large dark v-on="on">
+          <v-icon>
+            mdi-apps
+          </v-icon>
+        </v-btn>
+      </template>
+      <v-card>
+
+      </v-card>
+    </v-menu>
+    <v-btn icon>
+      <svg-icon name="bell" />
+    </v-btn>
   </v-app-bar>
 </template>
 
@@ -62,4 +84,8 @@ export default {
 }
 </script>
 
-<style scoped></style>
+<style scoped>
+.v-list-item{
+  cursor: pointer;
+}
+</style>

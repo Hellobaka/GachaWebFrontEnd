@@ -14,7 +14,7 @@
                 <v-list-item-content>
                   <v-list-item-title v-text="pool.Name" />
                   <v-list-item-subtitle v-text="'更新时间: ' + pool.UpdateDt" />
-                  <v-list-item-subtitle v-text="'作者: ' + pool.Remark" />
+                  <v-list-item-subtitle v-text="'作者: ' + pool.Author" />
                 </v-list-item-content>
               </v-list-item>
             </v-list-item-group>
@@ -32,7 +32,7 @@
             disabled
           />
           <v-text-field
-            :value="selectedItem.Remark"
+            :value="selectedItem.Author"
             label="作者"
             disabled
           />
@@ -62,6 +62,13 @@
             </v-col>
             <v-col cols="1">
               <v-btn color="success" :loading="buttonLoading" @click="multiGacha">测试多抽</v-btn>
+            </v-col>
+            <v-col cols="1">
+              <v-btn class="mx-2" fab small color="white" @click="handleLike">
+                <v-icon :color="likeStatus? 'pink' : ''">
+                  {{ likeStatus? 'mdi-heart': 'mdi-heart-outline' }}
+                </v-icon>
+              </v-btn>
             </v-col>
           </v-row>
         </v-card>
@@ -96,7 +103,7 @@
 
 <script>
 import { GzipUnZip } from '@/utils/index'
-import { getAllPools, testPic } from '@/api/pool'
+import { getAllPools, testPic, setLike, setUnLike } from '@/api/pool'
 import moment from 'moment'
 
 export default {
@@ -106,7 +113,9 @@ export default {
       pools: [],
       dialogVisible: false,
       picResult: 'data:image/png;base64,',
-      buttonLoading: false
+      buttonLoading: false,
+      likeStatus: false,
+      SavedPools: []
     }
   },
   mounted() {
@@ -116,12 +125,13 @@ export default {
         item.UpdateDt = moment(item.UpdateDt).format('YYYY-MM-DD HH:mm:ss')
       })
     }).catch((exc) => {
-      this.snackbar.error(exc)
+      this.snackbar.Error(exc)
       console.log(exc)
     })
   },
   methods: {
     OnClickItem(item) {
+      this.likeStatus = this.$store.getters.savedPools.indexOf(item.PoolID) !== -1
       this.selectedItem = item
     },
     signalGacha() {
@@ -148,6 +158,7 @@ export default {
       }
       this.buttonLoading = true
       testPic(this.selectedItem.PoolID, true).then(response => {
+        this.snackbar.Success('生成成功，剩余调用次数：' + response.data.callCount)
         this.picResult = 'data:image/png;base64,' + response.data.img
         this.dialogVisible = true
       }).catch((exc) => {
@@ -156,6 +167,27 @@ export default {
       }).finally(() => {
         this.buttonLoading = false
       })
+    },
+    handleLike() {
+      if (this.selectedItem.PoolID === undefined) {
+        this.snackbar.Warning('请从卡池列表选中一项')
+        return
+      }
+      const poolID = this.selectedItem.PoolID
+      if (this.likeStatus) {
+        setUnLike(poolID).then(() => {
+          this.$store.getters.savedPools.remove(poolID)
+          this.likeStatus = false
+        })
+      } else {
+        setLike(poolID).then(() => {
+          if (this.$store.getters.savedPools.indexOf(poolID) === -1) {
+            this.$store.getters.savedPools.push(poolID)
+          }
+          console.log(this.$store.getters.savedPools)
+          this.likeStatus = true
+        })
+      }
     }
   }
 }
