@@ -57,13 +57,13 @@
             disabled
           />
           <v-row>
-            <v-col cols="1">
+            <v-col cols="4" sm="1">
               <v-btn color="primary" :loading="buttonLoading" @click="signalGacha">测试单抽</v-btn>
             </v-col>
-            <v-col cols="1">
+            <v-col cols="4" sm="1">
               <v-btn color="success" :loading="buttonLoading" @click="multiGacha">测试多抽</v-btn>
             </v-col>
-            <v-col cols="1">
+            <v-col cols="1" sm="1">
               <v-btn class="mx-2" fab small color="white" @click="handleLike">
                 <v-icon :color="likeStatus? 'pink' : ''">
                   {{ likeStatus? 'mdi-heart': 'mdi-heart-outline' }}
