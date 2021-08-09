@@ -54,8 +54,9 @@ export const constantRoutes = [
     }]
   },
   {
-    path: '/download',
+    path: '/',
     component: Layout,
+    hidden: true,
     children: [{
       path: 'download',
       name: 'DownloadPage',
@@ -64,8 +65,9 @@ export const constantRoutes = [
     }]
   },
   {
-    path: '/github',
+    path: '/',
     component: Layout,
+    hidden: true,
     children: [{
       path: 'github',
       name: 'Github',
@@ -81,13 +83,23 @@ export const constantRoutes = [
  */
 export const asyncRoutes = [
   {
-    path: '/poolPerview',
+    path: '/',
     component: Layout,
     children: [{
       path: 'poolPerview',
       name: 'PoolPerview',
       component: () => import('@/views/poolpreview/index'),
-      meta: { title: '卡池预览', icon: 'mdi-github' }
+      meta: { title: '卡池预览', icon: 'mdi-alpha-g' }
+    }]
+  },
+  {
+    path: '/',
+    component: Layout,
+    children: [{
+      path: 'manageMyPool',
+      name: 'ManageMyPool',
+      component: () => import('@/views/manageMyPool/index'),
+      meta: { title: '管理收藏卡池', icon: 'mdi-clover' }
     }]
   },
   // 404 page must be placed at the end !!!
