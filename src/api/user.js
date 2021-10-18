@@ -83,3 +83,10 @@ export function resetPwd(sessionID, newpwd) {
     params: { sessionID, newpwd }
   })
 }
+
+export function getActionRecords() {
+  return request({
+    url: '/api/v1/user/GetActionRecords',
+    method: 'get'
+  })
+}
