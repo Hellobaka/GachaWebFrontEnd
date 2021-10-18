@@ -15,6 +15,8 @@
   },
   "dependencies": {
     "axios": "0.18.1",
+    "babel-polyfill": "^6.26.0",
+    "clipboard": "^2.0.8",
     "core-js": "3.6.5",
     "js-cookie": "2.2.0",
     "js-md5": "^0.7.3",
@@ -24,8 +26,10 @@
     "path-to-regexp": "2.4.0",
     "screenfull": "^5.1.0",
     "vue": "2.6.10",
+    "vue-image-crop-upload": "^3.0.3",
     "vue-router": "3.0.6",
     "vuetify": "^2.4.0",
+    "vuetify-dialog": "^2.0.17",
     "vuetify-toast-snackbar-ng": "^0.7.3",
     "vuex": "3.1.0"
   },
