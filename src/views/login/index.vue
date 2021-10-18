@@ -119,104 +119,7 @@
             </v-card>
           </v-dialog>
           <v-dialog v-model="forgetVisible" max-width="600px">
-            <v-stepper
-              v-model="forgetStep"
-              vertical
-            >
-              <v-stepper-step
-                :complete="forgetStep > 1"
-                step="1"
-              >
-                需要找回密码的邮箱
-                <small>QQ相关功能开发中</small>
-              </v-stepper-step>
-
-              <v-stepper-content step="1">
-                <v-text-field
-                  v-model="forgetForm.email"
-                  label="邮箱"
-                  clearable
-                  type="email"
-                  :rules="[rules.username]"
-                  :validate-on-blur="true"
-                />
-                <v-btn
-                  color="primary"
-                  :loading="forgetForm.verifyEmailLoading"
-                  @click="forget_verifyEmail"
-                >
-                  验证
-                </v-btn>
-              </v-stepper-content>
-
-              <v-stepper-step
-                :complete="forgetStep > 2"
-                step="2"
-              >
-                填写邮箱验证码
-              </v-stepper-step>
-
-              <v-stepper-content step="2">
-                <v-row style="margin-top: 10px;margin-left: 5px;margin-right: 5px;align-items:baseline">
-                  <v-text-field
-                    v-model="forgetForm.captchacode"
-                    label="验证码"
-                    clearable
-                  />
-                  <v-btn
-                    color="primary"
-                    style="margin:5px"
-                    :disabled="forgetForm.captchaText !== '获取验证码'"
-                    :loading="forgetForm.captchaLoading"
-                    @click="forget_getEmailCaptcha"
-                  >
-                    {{ forgetForm.captchaText }}
-                  </v-btn>
-                </v-row>
-                <v-btn
-                  color="primary"
-                  :loading="forgetForm.captchaVerifyLoading"
-                  @click="forget_VerifyEmailCaptcha"
-                >
-                  验证
-                </v-btn>
-              </v-stepper-content>
-
-              <v-stepper-step
-                :complete="forgetStep > 3"
-                step="3"
-              >
-                重置密码
-              </v-stepper-step>
-
-              <v-stepper-content step="3">
-                <v-text-field
-                  v-model="forgetForm.newpwd"
-                  label="新密码"
-                  prepend-icon="mdi-lock"
-                  :type="passwordDisplay ? 'text' : 'password'"
-                  :append-icon="passwordDisplay ? 'mdi-eye' : 'mdi-eye-off'"
-                  :rules="[rules.password]"
-                  @click:append="passwordDisplay = !passwordDisplay"
-                />
-                <v-text-field
-                  v-model="forgetForm.confirmnewpwd"
-                  label="重复新密码"
-                  prepend-icon="mdi-lock"
-                  :type="passwordDisplay ? 'text' : 'password'"
-                  :append-icon="passwordDisplay ? 'mdi-eye' : 'mdi-eye-off'"
-                  :rules="[forget_confirmpwdVerify]"
-                  @click:append="passwordDisplay = !passwordDisplay"
-                />
-                <v-btn
-                  color="primary"
-                  :loading="forgetForm.finalLoading"
-                  @click="forgetHandler"
-                >
-                  提交
-                </v-btn>
-              </v-stepper-content>
-            </v-stepper>
+            <ChangePassword />
           </v-dialog>
         </v-layout>
       </v-container>
@@ -225,12 +128,15 @@
 </template>
 
 <script>
-import { register, verifyQQ, verifyEmail, verifyCaptcha, verifyEmailCaptcha, getEmailCaptcha, resetPwd } from '@/api/user'
+import ChangePassword from '@/components/ChangePassword/index.vue'
+import { register, verifyQQ, verifyEmail, verifyCaptcha } from '@/api/user'
 export default {
   name: 'Login',
+  components: {
+    'ChangePassword': ChangePassword
+  },
   data() {
     return {
-      forgetStep: 1,
       passwordDisplay: false,
       loginLoading: false,
       regLoading: false,
@@ -241,20 +147,6 @@ export default {
       loginForm: {
         username: '',
         password: ''
-      },
-      forgetForm: {
-        email: '',
-        newpassword: '',
-        captchacode: '',
-        second: 0,
-        captchaText: '获取验证码',
-        sessionID: '',
-        captchaLoading: false,
-        captchaVerifyLoading: false,
-        newpwd: '',
-        confirmnewpwd: '',
-        finalLoading: false,
-        verifyEmailLoading: false
       },
       registerForm: {
         QQ: '',
@@ -287,16 +179,6 @@ export default {
         }
       }
     }
-  },
-  mounted() {
-    const s1 = document.createElement('script')
-    s1.type = 'text/javascript'
-    s1.src = 'https://ssl.captcha.qq.com/TCaptcha.js'
-    document.body.appendChild(s1)
-    const s2 = document.createElement('script')
-    s2.type = 'text/javascript'
-    s2.src = 'http://pv.sohu.com/cityjson?ie=utf-8'
-    document.body.appendChild(s2)
   },
   methods: {
     captchaNotice(status, res) {
@@ -352,7 +234,7 @@ export default {
         })
         .catch((msg) => {
           this.loading = false
-          this.snackbar.Error(msg)
+          // this.snackbar.Error(msg)
         })
         .finally(() => {
           this.loginLoading = false
@@ -395,75 +277,16 @@ export default {
         this.snackbar.Success('注册成功')
       }).catch((err) => {
         this.snackbar.Error(err)
+      }).finally(() => {
+        this.regLoading = false
       })
-      this.regLoading = false
-    },
-    forget_verifyEmail() {
-      this.forgetForm.verifyEmailLoading = true
-      // eslint-disable-next-line no-undef
-      const captcha1 = new TencentCaptcha('2038093986', (res) => this.captchaCallback(res, this.nextStep))
-      captcha1.show()
-    },
-    forget_getEmailCaptcha() {
-      if (this.forgetForm.second !== 0) {
-        return
-      }
-      this.forgetForm.captchaLoading = true
-      getEmailCaptcha(this.forgetForm.email).then(response => {
-        if (response.msg === 'ok') {
-          this.forgetForm.second = 60
-          this.forgetForm.sessionID = response.data
-          this.forgetForm.captchaText = this.forgetForm.second + '秒后重新获取'
-          setInterval(() => {
-            if (this.forgetForm.second === 0) {
-              this.forgetForm.captchaText = '获取验证码'
-            } else {
-              this.forgetForm.second--
-              this.forgetForm.captchaText = this.forgetForm.second + '秒后重新获取'
-            }
-          }, 1000)
-          this.forgetForm.captchaLoading = false
-        }
-      }).catch(() => { this.forgetForm.captchaLoading = false })
-    },
-    forget_confirmpwdVerify() {
-      if (this.forgetForm.newpwd !== this.forgetForm.confirmnewpwd) {
-        return '两次密码不一致'
-      }
-      return true
-    },
-    nextStep() {
-      if (this.forgetStep === 3) {
-        return
-      }
-      this.forgetStep++
-      this.forgetForm.verifyEmailLoading = false
-    },
-    forget_VerifyEmailCaptcha() {
-      this.forgetForm.captchaVerifyLoading = true
-      verifyEmailCaptcha(this.forgetForm.captchacode, this.forgetForm.sessionID).then((response) => {
-        this.forgetStep = 3
-        this.forgetForm.captchaVerifyLoading = false
-      }).catch(() => { this.forgetForm.captchaVerifyLoading = false })
-    },
-    forgetHandler() {
-      this.forgetForm.finalLoading = true
-      resetPwd(this.forgetForm.sessionID, this.forgetForm.newpwd).then(() => {
-        this.snackbar.Success('密码重置成功')
-        this.forgetForm.finalLoading = false
-      }).catch(() => { this.forgetForm.finalLoading = false })
     },
     showRegisterDialog() {
       this.registerVisible = true
     },
     showForgetDialog() {
-      this.forgetForm.sessionID = ''
-      this.forgetStep = 1
-      this.forgetForm.captchacode = ''
       this.forgetVisible = true
     }
   }
 }
 </script>
-
-<style scoped></style>

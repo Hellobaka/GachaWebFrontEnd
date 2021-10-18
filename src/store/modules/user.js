@@ -27,6 +27,9 @@ const mutations = {
   SET_AVATAR: (state, avatar) => {
     state.avatar = avatar
   },
+  SET_APIKEY: (state, apikey) => {
+    state.APIKey = apikey
+  },
   SET_ROLES: (state, roles) => {
     state.roles = roles
   },
@@ -49,7 +52,9 @@ const actions = {
       })
     })
   },
-
+  resetAPIKey({ commit }, data) {
+    commit('SET_APIKEY', data)
+  },
   // get user info
   getInfo({ commit, state }) {
     return new Promise((resolve, reject) => {
@@ -72,6 +77,7 @@ const actions = {
         commit('SET_ROLES', roles)
         commit('SET_NAME', nickname)
         commit('SET_AVATAR', avatar)
+        commit('SET_APIKEY', response.data.apiKey)
         commit('SET_POOLS', savedPools)
         resolve(response.data)
       }).catch(error => {

@@ -45,6 +45,15 @@ new Vue({
   vuetify,
   render: h => h(App)
 })
+
+import VuetifyDialog from 'vuetify-dialog'
+import 'vuetify-dialog/dist/vuetify-dialog.css'
+
+Vue.use(VuetifyDialog, {
+  context: {
+    vuetify
+  }
+})
 // eslint-disable-next-line no-extend-native
 Array.prototype.remove = function(val) {
   var index = this.indexOf(val)
