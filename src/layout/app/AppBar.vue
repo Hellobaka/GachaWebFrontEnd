@@ -23,11 +23,11 @@
         </v-btn>
       </template>
       <v-list>
-        <v-list-item>
+        <v-list-item @click="changeProfile">
           <v-icon>mdi-account</v-icon>
           <v-list-item-title>个人信息</v-list-item-title>
         </v-list-item>
-        <v-list-item>
+        <v-list-item @click="changePassword">
           <v-icon>mdi-account-lock</v-icon>
           <v-list-item-title>修改密码</v-list-item-title>
         </v-list-item>
@@ -76,7 +76,8 @@
 <script>
 import SvgIcon from '@/components/SvgIcon/index.vue'
 import ScreenFull from '../screenFull/ScreenFull'
-
+import ChangeProfile from '@/components/ChangeProfile/index.vue'
+import ChangePassword from '@/components/ChangePassword/index.vue'
 export default {
   name: 'AppBar',
   components: {
@@ -96,13 +97,25 @@ export default {
     navIconClick() {
       this.$store.dispatch('app/toggleSideBar')
     },
+    changeProfile() {
+      this.$dialog.show(ChangeProfile)
+    },
+    changePassword() {
+      this.$dialog.show(ChangePassword)
+    },
     logout() {
-      this.$store
-        .dispatch('user/logout', this.$store.getters.token)
-        .then(() => {
-          // 刷新路由
-          history.go('/login')
-        })
+      this.$dialog.confirm({
+        text: '确认要退出吗？',
+        title: '退出登录'
+      }).then(data => {
+        if (data) {
+          this.$store
+            .dispatch('user/logout', this.$store.getters.token)
+            .then(() => {
+              history.go('/login')
+            })
+        }
+      })
     }
   }
 }
