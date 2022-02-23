@@ -35,6 +35,12 @@ const mutations = {
   },
   SET_POOLS: (state, pools) => {
     state.savedPools = pools
+  },
+  SET_INFO: (state, info) => {
+    state.info = info
+  },
+  SET_EMAIL: (state, email) => {
+    state.email = email
   }
 }
 
@@ -63,7 +69,7 @@ const actions = {
           reject('Verification failed, please Login again.')
         }
         console.log(response.data)
-        const { developer, nickname, avatar, savedPools } = response.data
+        const { developer, nickname, avatar, savedPools, email } = response.data
         let roles = ''
         if (developer === 0) {
           roles = 'user'
@@ -77,8 +83,10 @@ const actions = {
         commit('SET_ROLES', roles)
         commit('SET_NAME', nickname)
         commit('SET_AVATAR', avatar)
+        commit('SET_EMAIL', email)
         commit('SET_APIKEY', response.data.apiKey)
         commit('SET_POOLS', savedPools)
+        commit('SET_INFO', response.data)
         resolve(response.data)
       }).catch(error => {
         reject(error)

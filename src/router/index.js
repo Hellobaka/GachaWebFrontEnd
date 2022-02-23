@@ -46,34 +46,27 @@ export const constantRoutes = [
     path: '/',
     component: Layout,
     redirect: '/dashboard',
-    children: [{
-      path: 'dashboard',
-      name: 'Dashboard',
-      component: () => import('@/views/dashboard/index'),
-      meta: { title: '首页', icon: 'mdi-view-dashboard' }
-    }]
-  },
-  {
-    path: '/',
-    component: Layout,
-    hidden: true,
-    children: [{
-      path: 'download',
-      name: 'DownloadPage',
-      component: () => import('@/views/download/index'),
-      meta: { title: '下载', icon: 'mdi-view-dashboard' }
-    }]
-  },
-  {
-    path: '/',
-    component: Layout,
-    hidden: true,
-    children: [{
-      path: 'github',
-      name: 'Github',
-      component: () => import('@/views/github/index'),
-      meta: { title: 'GitHub页', icon: 'mdi-github' }
-    }]
+    meta: { title: '功能页', icon: 'mdi-view-dashboard' },
+    children: [
+      {
+        path: 'dashboard',
+        name: 'Dashboard',
+        component: () => import('@/views/dashboard/index'),
+        meta: { title: '首页', icon: 'mdi-view-dashboard' }
+      },
+      {
+        path: 'download',
+        name: 'DownloadPage',
+        component: () => import('@/views/download/index'),
+        meta: { title: '下载', icon: 'mdi-view-dashboard' }
+      },
+      {
+        path: 'github',
+        name: 'Github',
+        component: () => import('@/views/github/index'),
+        meta: { title: 'GitHub页', icon: 'mdi-github' }
+      }
+    ]
   }
 ]
 
@@ -83,24 +76,23 @@ export const constantRoutes = [
  */
 export const asyncRoutes = [
   {
-    path: '/',
+    path: '/function',
     component: Layout,
-    children: [{
-      path: 'poolPerview',
-      name: 'PoolPerview',
-      component: () => import('@/views/poolpreview/index'),
-      meta: { title: '卡池预览', icon: 'mdi-alpha-g' }
-    }]
-  },
-  {
-    path: '/',
-    component: Layout,
-    children: [{
-      path: 'manageMyPool',
-      name: 'ManageMyPool',
-      component: () => import('@/views/manageMyPool/index'),
-      meta: { title: '管理收藏卡池', icon: 'mdi-clover' }
-    }]
+    meta: { title: '功能', icon: 'mdi-alpha-f' },
+    children: [
+      {
+        path: 'poolPerview',
+        name: 'PoolPerview',
+        component: () => import('@/views/poolpreview/index'),
+        meta: { title: '卡池预览', icon: 'mdi-alpha-g' }
+      },
+      {
+        path: 'manageMyPool',
+        name: 'ManageMyPool',
+        component: () => import('@/views/manageMyPool/index'),
+        meta: { title: '管理收藏卡池', icon: 'mdi-clover' }
+      }
+    ]
   },
   // 404 page must be placed at the end !!!
   { path: '*', redirect: '/404', hidden: true }

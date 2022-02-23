@@ -1,114 +1,115 @@
 <template>
-  <v-card style="padding: 1vw 1vw 2vw 1vw;">
-    <v-card-title>修改密码</v-card-title>
-    <div style="margin: 0 1vw;">
-      <v-stepper
-        v-model="forgetStep"
-        vertical
+  <v-stepper
+    v-model="forgetStep"
+    vertical
+  >
+    <v-stepper-step
+      :complete="forgetStep > 1"
+      step="1"
+    >
+      需要找回密码的邮箱
+      <small>QQ相关功能开发中</small>
+    </v-stepper-step>
+
+    <v-stepper-content step="1">
+      <v-text-field
+        v-model="forgetForm.email"
+        label="邮箱"
+        clearable
+        type="email"
+        :rules="[rules.username]"
+        :validate-on-blur="true"
+        :disabled="preEmail!==''"
+      />
+      <v-btn
+        color="primary"
+        :loading="forgetForm.verifyEmailLoading"
+        @click="forget_verifyEmail"
       >
-        <v-stepper-step
-          :complete="forgetStep > 1"
-          step="1"
+        验证
+      </v-btn>
+    </v-stepper-content>
+
+    <v-stepper-step
+      :complete="forgetStep > 2"
+      step="2"
+    >
+      填写邮箱验证码
+    </v-stepper-step>
+
+    <v-stepper-content step="2">
+      <div style="display: flex;">
+        <v-text-field
+          v-model="forgetForm.captchacode"
+          label="验证码"
+          clearable
+        />
+        <v-btn
+          color="primary"
+          style="margin:5px"
+          :disabled="forgetForm.captchaText !== '获取验证码'"
+          :loading="forgetForm.captchaLoading"
+          @click="forget_getEmailCaptcha"
         >
-          需要找回密码的邮箱
-          <small>QQ相关功能开发中</small>
-        </v-stepper-step>
+          {{ forgetForm.captchaText }}
+        </v-btn>
+      </div>
+      <v-btn
+        color="primary"
+        :loading="forgetForm.captchaVerifyLoading"
+        @click="forget_VerifyEmailCaptcha"
+      >
+        验证
+      </v-btn>
+    </v-stepper-content>
 
-        <v-stepper-content step="1">
-          <v-text-field
-            v-model="forgetForm.email"
-            label="邮箱"
-            clearable
-            type="email"
-            :rules="[rules.username]"
-            :validate-on-blur="true"
-          />
-          <v-btn
-            color="primary"
-            :loading="forgetForm.verifyEmailLoading"
-            @click="forget_verifyEmail"
-          >
-            验证
-          </v-btn>
-        </v-stepper-content>
+    <v-stepper-step
+      :complete="forgetStep > 3"
+      step="3"
+    >
+      重置密码
+    </v-stepper-step>
 
-        <v-stepper-step
-          :complete="forgetStep > 2"
-          step="2"
-        >
-          填写邮箱验证码
-        </v-stepper-step>
-
-        <v-stepper-content step="2">
-          <div style="display: flex;">
-            <v-text-field
-              v-model="forgetForm.captchacode"
-              label="验证码"
-              clearable
-            />
-            <v-btn
-              color="primary"
-              style="margin:5px"
-              :disabled="forgetForm.captchaText !== '获取验证码'"
-              :loading="forgetForm.captchaLoading"
-              @click="forget_getEmailCaptcha"
-            >
-              {{ forgetForm.captchaText }}
-            </v-btn>
-          </div>
-          <v-btn
-            color="primary"
-            :loading="forgetForm.captchaVerifyLoading"
-            @click="forget_VerifyEmailCaptcha"
-          >
-            验证
-          </v-btn>
-        </v-stepper-content>
-
-        <v-stepper-step
-          :complete="forgetStep > 3"
-          step="3"
-        >
-          重置密码
-        </v-stepper-step>
-
-        <v-stepper-content step="3">
-          <v-text-field
-            v-model="forgetForm.newpwd"
-            label="新密码"
-            prepend-icon="mdi-lock"
-            :type="passwordDisplay ? 'text' : 'password'"
-            :append-icon="passwordDisplay ? 'mdi-eye' : 'mdi-eye-off'"
-            :rules="[rules.password]"
-            @click:append="passwordDisplay = !passwordDisplay"
-          />
-          <v-text-field
-            v-model="forgetForm.confirmnewpwd"
-            label="重复新密码"
-            prepend-icon="mdi-lock"
-            :type="passwordDisplay ? 'text' : 'password'"
-            :append-icon="passwordDisplay ? 'mdi-eye' : 'mdi-eye-off'"
-            :rules="[forget_confirmpwdVerify]"
-            @click:append="passwordDisplay = !passwordDisplay"
-          />
-          <v-btn
-            color="primary"
-            :loading="forgetForm.finalLoading"
-            @click="forgetHandler"
-          >
-            提交
-          </v-btn>
-        </v-stepper-content>
-      </v-stepper>
-
-    </div>
-  </v-card>
+    <v-stepper-content step="3">
+      <v-text-field
+        v-model="forgetForm.newpwd"
+        label="新密码"
+        prepend-icon="mdi-lock"
+        :type="passwordDisplay ? 'text' : 'password'"
+        :append-icon="passwordDisplay ? 'mdi-eye' : 'mdi-eye-off'"
+        :rules="[rules.password]"
+        @click:append="passwordDisplay = !passwordDisplay"
+      />
+      <v-text-field
+        v-model="forgetForm.confirmnewpwd"
+        label="重复新密码"
+        prepend-icon="mdi-lock"
+        :type="passwordDisplay ? 'text' : 'password'"
+        :append-icon="passwordDisplay ? 'mdi-eye' : 'mdi-eye-off'"
+        :rules="[forget_confirmpwdVerify]"
+        @click:append="passwordDisplay = !passwordDisplay"
+      />
+      <v-btn
+        color="primary"
+        :loading="forgetForm.finalLoading"
+        @click="forgetHandler"
+      >
+        提交
+      </v-btn>
+    </v-stepper-content>
+  </v-stepper>
 </template>
 
 <script>
 import { verifyCaptcha, verifyEmailCaptcha, getEmailCaptcha, resetPwd } from '@/api/user'
 export default {
   name: 'ChangePassword',
+  props: {
+    preEmail: {
+      type: String,
+      default: ''
+    }
+  },
   data() {
     return {
       passwordDisplay: false,
@@ -160,6 +161,7 @@ export default {
     s2.type = 'text/javascript'
     s2.src = 'http://pv.sohu.com/cityjson?ie=utf-8'
     document.body.appendChild(s2)
+    this.forgetForm.email = this.preEmail
   },
   methods: {
     close() {
@@ -186,6 +188,7 @@ export default {
         })
       } else if (res.ret === 2) {
         this.snackbar.Warning('取消验证码操作')
+        this.forgetForm.verifyEmailLoading = false
       }
     },
     forget_verifyEmail() {

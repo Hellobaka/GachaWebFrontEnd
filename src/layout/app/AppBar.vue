@@ -8,12 +8,17 @@
     </v-toolbar-title>
     <v-spacer />
 
+    <v-btn icon @click="switchDark">
+      <v-icon>mdi-white-balance-sunny</v-icon>
+    </v-btn>
+    <v-btn icon>
+      <svg-icon name="bell" />
+    </v-btn>
     <v-menu
       transition="slide-y-transition"
       close-on-content-click
       offset-y
       bottom
-      nudge-left="36"
     >
       <template v-slot:activator="{ on }">
         <v-btn icon large color="primary" dark v-on="on">
@@ -38,59 +43,27 @@
         </v-list-item>
       </v-list>
     </v-menu>
-    <v-menu
-      transition="slide-y-transition"
-      close-on-content-click
-      offset-y
-      bottom
-      nudge-left="136"
-      nudge-top="-10"
-    >
-      <template v-slot:activator="{ on }">
-        <v-btn icon large dark v-on="on">
-          <v-icon>
-            mdi-apps
-          </v-icon>
-        </v-btn>
-      </template>
-      <v-card width="300" style="padding: 15px; text-align:center;">
-        <v-row v-for="row in application" :key="row">
-          <v-col v-for="col in row" :key="col" style="margin:5px; border-radius: 10px;">
-            <a :href="col.href" style="display: block; width: 100%">
-              <v-icon>
-                {{ col.icon }}
-              </v-icon>
-              <div>{{ col.title }}</div>
-            </a>
-          </v-col>
-        </v-row>
-      </v-card>
-    </v-menu>
-    <v-btn icon>
-      <svg-icon name="bell" />
-    </v-btn>
-    <screen-full />
+    <v-dialog v-model="showForgetDialog" max-width="500">
+      <ChangePassword v-if="showForgetDialog" :preEmail="pwdEmail" />
+    </v-dialog>
   </v-app-bar>
 </template>
 
 <script>
 import SvgIcon from '@/components/SvgIcon/index.vue'
-import ScreenFull from '../screenFull/ScreenFull'
 import ChangeProfile from '@/components/ChangeProfile/index.vue'
 import ChangePassword from '@/components/ChangePassword/index.vue'
 export default {
   name: 'AppBar',
   components: {
     SvgIcon,
-    ScreenFull
+    ChangePassword
   },
   data() {
     return {
-      application: [
-        [{ href: '/#/download', icon: 'mdi-download', title: '下载' }, { href: '/#/github', icon: 'mdi-github', title: 'Github' }, { href: '/#/poolPerview', icon: 'mdi-eye-settings-outline', title: '卡池预览' }],
-        [{ href: '#', icon: 'mdi-apps', title: 'aaa' }, { href: '#', icon: 'mdi-apps', title: 'bbb' }, { href: '#', icon: 'mdi-apps', title: 'ccc' }],
-        [{ href: '#', icon: 'mdi-apps', title: 'aaa' }, { href: '#', icon: 'mdi-apps', title: 'bbb' }, { href: '#', icon: 'mdi-apps', title: 'ccc' }]
-      ]
+      dark: false,
+      showForgetDialog: false,
+      pwdEmail: ''
     }
   },
   methods: {
@@ -98,10 +71,14 @@ export default {
       this.$store.dispatch('app/toggleSideBar')
     },
     changeProfile() {
+      window.sessionStorage.setItem('store',
+        JSON.stringify({ state: this.$store.state, baseURL: process.env.VUE_APP_BASE_API }))
       this.$dialog.show(ChangeProfile)
     },
     changePassword() {
-      this.$dialog.show(ChangePassword)
+      this.pwdEmail = this.$store.getters.email
+      this.showForgetDialog = true
+      // this.$dialog.show(ChangePassword)
     },
     logout() {
       this.$dialog.confirm({
@@ -116,6 +93,10 @@ export default {
             })
         }
       })
+    },
+    switchDark() {
+      this.dark = !this.dark
+      this.$vuetify.theme.dark = this.dark
     }
   }
 }

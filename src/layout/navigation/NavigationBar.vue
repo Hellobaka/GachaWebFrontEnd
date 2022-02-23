@@ -2,7 +2,7 @@
   <v-navigation-drawer
     v-model="$store.getters.sidebar.opened"
     app
-    mobile-break-point="600"
+    mobile-breakpoint="600"
     :expand-on-hover="$vuetify.breakpoint.smOnly"
   >
     <nested-list :props-routes="$store.getters.permission_routes" />

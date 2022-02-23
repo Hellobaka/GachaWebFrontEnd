@@ -20,19 +20,18 @@
       </v-list-group>
 
       <!--  :to="{ name: route.name }" 基于命名路由的路由跳转  -->
-      <div v-else>
-        <v-list-item
-          :to="routeNameTo(route)"
-          :class="isLevelOneRoute(route) ? '' : 'ml-5'"
-          :color="activeColor"
-        >
-          <v-list-item-icon v-if="listItemConfig(route, 'icon')">
-            <v-icon>{{ listItemConfig(route, "icon") }}</v-icon>
-          </v-list-item-icon>
-          <v-list-item-title v-if="listItemConfig(route, 'title')">
-            {{ listItemConfig(route, "title") }}</v-list-item-title>
-        </v-list-item>
-      </div>
+      <v-list-item
+        v-else
+        :to="routeNameTo(route)"
+        :class="isLevelOneRoute(route) ? '' : 'ml-5'"
+        :color="activeColor"
+      >
+        <v-list-item-icon v-if="listItemConfig(route, 'icon')">
+          <v-icon>{{ listItemConfig(route, "icon") }}</v-icon>
+        </v-list-item-icon>
+        <v-list-item-title v-if="listItemConfig(route, 'title')">
+          {{ listItemConfig(route, "title") }}</v-list-item-title>
+      </v-list-item>
     </div>
   </v-list>
 </template>

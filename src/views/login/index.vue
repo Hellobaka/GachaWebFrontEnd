@@ -1,5 +1,5 @@
 <template>
-  <v-app style="background-image: url('https://www.toptal.com/designers/subtlepatterns/patterns/webb.png')">
+  <v-app style="background-image: url('img/y-so-serious-white.png')">
     <v-main>
       <v-container fluid fill-height>
         <v-layout class="align-center justify-center">

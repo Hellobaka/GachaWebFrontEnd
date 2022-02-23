@@ -31,12 +31,13 @@
     "vuetify": "^2.4.0",
     "vuetify-dialog": "^2.0.17",
     "vuetify-toast-snackbar-ng": "^0.7.3",
-    "vuex": "3.1.0"
+    "vuex": "^3.4.0"
   },
   "devDependencies": {
     "@vue/cli-plugin-babel": "4.4.4",
     "@vue/cli-plugin-eslint": "4.4.4",
     "@vue/cli-plugin-unit-jest": "4.4.4",
+    "@vue/cli-plugin-vuex": "^4.5.14",
     "@vue/cli-service": "4.4.4",
     "@vue/test-utils": "1.0.0-beta.29",
     "autoprefixer": "9.5.1",
